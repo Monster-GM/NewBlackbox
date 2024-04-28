@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="black_box_service_name">:black</string>
+    <string name="choose">Choose</string>
+<!--    <string name="service_name">:system_process</string>-->
+</resources>

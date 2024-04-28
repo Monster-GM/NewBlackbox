@@ -1,0 +1,7 @@
+include ':Bcore'
+include ':app'
+include ':Bcore:black-fake'
+include ':Bcore:black-hook'
+include ':android-mirror'
+
+rootProject.name = "BlackBox"
