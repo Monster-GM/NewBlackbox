@@ -9,3 +9,7 @@
 4.IWindowManagerProxy待修复
 
 5.AutoFillManager待修复
+
+6.IAccountManagerProxy待修复
+
+7.在sevice下面,部分proxy的getWho和inject没有准确获取,可以参考va，例如IPermissionManagerProxy
