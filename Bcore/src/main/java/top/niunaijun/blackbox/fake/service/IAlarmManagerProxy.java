@@ -12,6 +12,7 @@ import top.niunaijun.blackbox.BlackBoxCore;
 import top.niunaijun.blackbox.fake.hook.BinderInvocationStub;
 import top.niunaijun.blackbox.fake.hook.MethodHook;
 import top.niunaijun.blackbox.fake.hook.ProxyMethod;
+import top.niunaijun.blackbox.fake.service.base.PkgMethodProxy;
 import top.niunaijun.blackbox.utils.ArrayUtils;
 import top.niunaijun.blackbox.utils.MethodParameterUtils;
 
@@ -39,16 +40,18 @@ public class IAlarmManagerProxy extends BinderInvocationStub {
         replaceSystemService(Context.ALARM_SERVICE);
     }
 
+
     @ProxyMethod("set")
     public static class Set extends MethodHook {
         @Override
         protected Object beforeHook(Object who, Method method, Object[] args) throws Throwable {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && args[0] instanceof String) {
+            if (Build.VERSION.SDK_INT >= 24 && (args[0] instanceof String)) {
                 args[0] = BlackBoxCore.getHostPkg();
             }
             int index = ArrayUtils.indexOfFirst(args, WorkSource.class);
             if (index >= 0) {
                 args[index] = null;
+                return true;
             }
             return true;
         }
@@ -65,7 +68,7 @@ public class IAlarmManagerProxy extends BinderInvocationStub {
     }
 
     @ProxyMethod("setTimeZone")
-    public static class setTimeZone extends MethodHook {
+    public static class SetTimeZone extends MethodHook {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
             return null;
@@ -73,24 +76,32 @@ public class IAlarmManagerProxy extends BinderInvocationStub {
     }
 
     @ProxyMethod("setTime")
-    public static class setTime extends MethodHook {
+    public static class SetTime extends MethodHook {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                return false;
-            }
-            return null;
+            return false;
         }
     }
 
-    @ProxyMethod("getNextAlarmClock")
-    public static class getNextAlarmClock extends MethodHook {
+    @ProxyMethod("canScheduleExactAlarms")
+    public static class CanScheduleExactAlarms extends MethodHook {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            MethodParameterUtils.replaceLastUserId(args);
+            MethodParameterUtils.replaceFirstAppPkg(args);
             return method.invoke(who, args);
         }
     }
+
+    @ProxyMethod("hasScheduleExactAlarm")
+    public static class HasScheduleExactAlarm extends MethodHook {
+        @Override
+        protected Object hook(Object who, Method method, Object[] args) throws Throwable {
+            MethodParameterUtils.replaceLastUserId(args);
+            MethodParameterUtils.replaceFirstAppPkg(args);
+            return method.invoke(who, args);
+        }
+    }
+
 
     @Override
     public boolean isBadEnv() {
