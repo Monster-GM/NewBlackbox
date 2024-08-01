@@ -316,6 +316,7 @@ public class IActivityManagerProxy extends ClassInvocationStub {
         }
     }
 
+    //TODO 待修复
     @ProxyMethod("bindService")
     public static class BindService extends MethodHook {
 
@@ -326,9 +327,7 @@ public class IActivityManagerProxy extends ClassInvocationStub {
             Intent intent = (Intent) args[2];
             String resolvedType = (String) args[3];
             IServiceConnection connection = (IServiceConnection) args[4];
-            //待修复
             StartService = connection;
-            //-----
             ComponentName component = intent.getComponent();
             long flags = getIntOrLongValue(args[5]);
             int userId = intent.getIntExtra("_B_|_UserId", -1);
