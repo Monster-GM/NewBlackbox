@@ -397,6 +397,12 @@ public class IActivityManagerProxy extends ClassInvocationStub {
         return -1L;
     }
 
+    //android 13.0变更
+    @ProxyMethod("bindServiceInstance")
+    public static class BindServiceInstance extends BindIsolatedService {
+
+    }
+
     // 10.0
     @ProxyMethod("bindIsolatedService")
     public static class BindIsolatedService extends BindService {
@@ -407,16 +413,10 @@ public class IActivityManagerProxy extends ClassInvocationStub {
             MethodParameterUtils.replaceLastUserId(args);
             return super.beforeHook(who, method, args);
         }
-    }
 
-    @ProxyMethod("bindServiceInstance")
-    public static class bindServiceInstance extends BindIsolatedService {
         @Override
-        protected Object beforeHook(Object who, Method method, Object[] args) throws Throwable {
-            // instanceName
-            args[6] = null;
-            MethodParameterUtils.replaceLastUserId(args);
-            return super.beforeHook(who, method, args);
+        protected boolean isIsolated() {
+            return true;
         }
     }
 
@@ -679,7 +679,6 @@ public class IActivityManagerProxy extends ClassInvocationStub {
             }
             IBinder peek = BlackBoxCore.getBActivityManager().peekService(intent, resolvedType, BActivityThread.getUserId());
             return peek;
-//            return null;
         }
     }
 
