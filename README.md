@@ -3,3 +3,4 @@
 2.bindService需要修复
 3.PM,AM,PMS,AMS的aidl中函数缺失
 4.IWindowManagerProxy待修复
+5.AutoFillManager待修复
