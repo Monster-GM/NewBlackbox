@@ -1,5 +1,7 @@
 # 问题列表
 
+0.增加插件运行时权限申请请求
+
 1.缺失resolveServiceInfo
 
 2.bindService需要修复
