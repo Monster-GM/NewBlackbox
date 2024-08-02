@@ -466,4 +466,10 @@ public class BlackBoxCore extends ClientConfiguration {
             nm.createNotificationChannel(notificationChannel);
         }
     }
+
+    // 20240801 add request permission add start 0
+    public boolean checkSelfPermission(String permission) {
+        return PackageManager.PERMISSION_GRANTED == getPackageManager().checkPermission(permission, getHostPackageName());
+    }
+    // 20240801 add request permission add end 0
 }

@@ -44,6 +44,7 @@ import top.niunaijun.blackbox.entity.pm.InstallResult;
 import top.niunaijun.blackbox.entity.pm.InstalledPackage;
 import top.niunaijun.blackbox.utils.AbiUtils;
 import top.niunaijun.blackbox.utils.FileUtils;
+import top.niunaijun.blackbox.utils.PermissionUtils;
 import top.niunaijun.blackbox.utils.Slog;
 import top.niunaijun.blackbox.utils.compat.PackageParserCompat;
 import top.niunaijun.blackbox.utils.compat.XposedParserCompat;
@@ -62,13 +63,15 @@ import static android.content.pm.PackageManager.MATCH_DIRECT_BOOT_UNAWARE;
 public class BPackageManagerService extends IBPackageManagerService.Stub implements ISystemService {
     public static final String TAG = "BPackageManagerService";
     public static BPackageManagerService sService = new BPackageManagerService();
-    private final Settings mSettings = new Settings();
+    private final Settings mSettings = new Settings();      // 等同于 PackageCacheManager
     private final ComponentResolver mComponentResolver;
     private static final BUserManagerService sUserManager = BUserManagerService.get();
     private final List<PackageMonitor> mPackageMonitors = new ArrayList<>();
     private final HashMap<String, BPackage.Permission> mPermissions = new HashMap<>();
 
     final Map<String, BPackageSettings> mPackages = mSettings.mPackages;
+    private final Map<String, String[]> mDangerousPermissions = new HashMap<>();
+
     final Object mInstallLock = new Object();
 
     public static BPackageManagerService get() {
@@ -855,4 +858,18 @@ public class BPackageManagerService extends IBPackageManagerService.Stub impleme
             mComponentResolver.addAllComponents(value.pkg);
         }
     }
+
+    // 20240801 add request permission add start 0
+    public String[] getDangerousPermissions(String packageName) {
+        synchronized (mDangerousPermissions) {
+            return mDangerousPermissions.get(packageName);
+        }
+    }
+
+    public void analyzePackageLocked(BPackageSettings bPackageSettings) {
+        synchronized (mDangerousPermissions) {
+            mDangerousPermissions.put(bPackageSettings.pkg.packageName, PermissionUtils.findDangerousPermissions(bPackageSettings.pkg.requestedPermissions));
+        }
+    }
+    // 20240801 add request permission add end 0
 }

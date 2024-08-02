@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        debug {
-            storeFile file('D:\\源码\\android.jks')
-            storePassword '123qaazabc'
-            keyAlias 'google'
-            keyPassword '123qaazabc'
-        }
-    }
+//    signingConfigs {
+//        debug {
+//            storeFile file('D:\\源码\\android.jks')
+//            storePassword '123qaazabc'
+//            keyAlias 'google'
+//            keyPassword '123qaazabc'
+//        }
+//    }
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
 
@@ -23,13 +23,16 @@ android {
         versionName "2.1.0"
 
         flavorDimensions "BlackBox32"
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
     }
 
     productFlavors {
         BlackBox32 {
             applicationId "top.niunaijun.blackboxa32"
             ndk {
-                abiFilters "armeabi-v7a"
+                abiFilters "armeabi-v7a", "arm64-v8a"
             }
             resValue "string", "app_name", "BlackBox32"
             manifestPlaceholders = [APP_ICON      : "@mipmap/ic_launcher",
@@ -39,7 +42,7 @@ android {
         BlackBox64 {
             applicationId "top.niunaijun.blackboxa64"
             ndk {
-                abiFilters "arm64-v8a"
+                abiFilters "arm64-v8a", "armeabi-v7a"
             }
             resValue "string", "app_name", "BlackBox64"
             manifestPlaceholders = [APP_ICON      : "@mipmap/ic_launcher",
@@ -49,7 +52,7 @@ android {
         BlackBox32Beta {
             applicationId "top.niunaijun.blackboxa32_beta"
             ndk {
-                abiFilters "armeabi-v7a"
+                abiFilters "armeabi-v7a", "arm64-v8a"
             }
             resValue "string", "app_name", "BlackBox32 Beta"
             manifestPlaceholders = [APP_ICON      : "@mipmap/ic_launcher_beta",

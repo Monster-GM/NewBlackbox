@@ -32,7 +32,7 @@ import top.niunaijun.blackbox.utils.compat.PackageParserCompat;
  * しーＪ
  * 此处无Bug
  */
-/*public*/ class Settings {
+/*public*/ class Settings { // 等同于 PackageCacheManager
     public static final String TAG = "Settings";
 
     final ArrayMap<String, BPackageSettings> mPackages = new ArrayMap<>();
@@ -209,6 +209,9 @@ import top.niunaijun.blackbox.utils.compat.PackageParserCompat;
             }
             bPackageSettings.save();
             mPackages.put(bPackageSettings.pkg.packageName, bPackageSettings);
+            // 20240801 add request permission add start 0
+            BPackageManagerService.get().analyzePackageLocked(bPackageSettings);
+            // 20240801 add request permission add end 0
             Slog.d(TAG, "loaded Package: " + packageName);
         } catch (Throwable e) {
             e.printStackTrace();

@@ -4,7 +4,9 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.ConditionVariable;
 import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
@@ -29,8 +31,10 @@ import top.niunaijun.blackbox.entity.AppConfig;
 import top.niunaijun.blackbox.fake.hook.ClassInvocationStub;
 import top.niunaijun.blackbox.proxy.ProxyManifest;
 import top.niunaijun.blackbox.utils.FileUtils;
+import top.niunaijun.blackbox.utils.PermissionUtils;
 import top.niunaijun.blackbox.utils.Slog;
 import top.niunaijun.blackbox.utils.compat.ApplicationThreadCompat;
+import top.niunaijun.blackbox.utils.compat.BuildCompat;
 import top.niunaijun.blackbox.utils.compat.BundleCompat;
 import top.niunaijun.blackbox.utils.provider.ProviderCall;
 
@@ -88,6 +92,9 @@ public class BProcessManagerService implements ISystemService {
             app.buid = BPackageManagerService.get().getAppId(packageName);
             app.callingBUid = getBUidByPidOrPackageName(callingPid, packageName);
             app.userId = userId;
+            // 20240801 add request permission add start 0
+            requestPermissionIfNeed(app);
+            // 20240801 add request permission add end 0
 
             bProcess.put(processName, app);
             mPidsSelfLocked.add(app);
@@ -104,6 +111,35 @@ public class BProcessManagerService implements ISystemService {
         }
         return app;
     }
+
+    // 20240801 add request permission add start 0
+    private void requestPermissionIfNeed(ProcessRecord app) {
+        if (PermissionUtils.isCheckPermissionRequired(app.info)) {
+           String[] permissions = BPackageManagerService.get().getDangerousPermissions(app.info.packageName);
+           if (!PermissionUtils.checkPermissions(permissions)) {
+               final ConditionVariable permissionLock = new ConditionVariable();
+               startRequestPermission(permissions, permissionLock);
+               permissionLock.block();
+           }
+        }
+    }
+
+    private void startRequestPermission(String[] permissions, final ConditionVariable permissionLock) {
+        PermissionUtils.startRequestPermissions(BlackBoxCore.getContext(), permissions, new PermissionUtils.CallBack() {
+            @Override
+            public boolean onResult(int requestCode, String[] permissions, int[] grantResults) {
+                boolean result = true;
+                try {
+                    result = PermissionUtils.isRequestGranted(grantResults);
+                }finally {
+                    permissionLock.open();
+                }
+                return result;
+            }
+        });
+    }
+
+    // 20240801 add request permission add end 0
 
     private int getUsingBPidL() {
         ActivityManager manager = (ActivityManager) BlackBoxCore.getContext().getSystemService(Context.ACTIVITY_SERVICE);
