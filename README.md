@@ -13,3 +13,5 @@
 6.IAccountManagerProxy待修复
 
 7.在sevice下面,部分proxy的getWho和inject没有准确获取,可以参考va，例如IPermissionManagerProxy
+
+8.在HONOR 50 SE上不能打开第三方虚拟应用
