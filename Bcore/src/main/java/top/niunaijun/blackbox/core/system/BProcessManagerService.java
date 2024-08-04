@@ -92,9 +92,6 @@ public class BProcessManagerService implements ISystemService {
             app.buid = BPackageManagerService.get().getAppId(packageName);
             app.callingBUid = getBUidByPidOrPackageName(callingPid, packageName);
             app.userId = userId;
-            // 20240801 add request permission add start 0
-            requestPermissionIfNeed(app);
-            // 20240801 add request permission add end 0
 
             bProcess.put(processName, app);
             mPidsSelfLocked.add(app);
@@ -195,6 +192,9 @@ public class BProcessManagerService implements ISystemService {
     //这里初始化了userinfo
     private boolean initAppProcessL(ProcessRecord record) {
         Log.d(TAG, "initProcess: " + record.processName);
+        // 20240801 add request permission add start 0
+        requestPermissionIfNeed(record);
+        // 20240801 add request permission add end 0
         AppConfig appConfig = record.getClientConfig();
         Bundle bundle = new Bundle();
         bundle.putParcelable(AppConfig.KEY, appConfig);
